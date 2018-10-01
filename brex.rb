@@ -7,6 +7,8 @@ cgi = CGI.new
 creator =        Sanitize.fragment(cgi['creator'], Sanitize::Config::RESTRICTED)
 extension_name = Sanitize.fragment(cgi['name'], Sanitize::Config::RESTRICTED)
 group =          Sanitize.fragment(cgi['group'], Sanitize::Config::RESTRICTED)
+group.capitalize!
+
 title =          Sanitize.fragment(cgi['title'], Sanitize::Config::RESTRICTED)
 description =    Sanitize.fragment(cgi['description'], Sanitize::Config::RESTRICTED)
 version =        Sanitize.fragment(cgi['version'], Sanitize::Config::RESTRICTED)
@@ -21,11 +23,11 @@ file_stream = Zip::OutputStream.write_buffer do |zip|
 require 'sketchup.rb'
 require 'extensions.rb'
 
-module #{group_name}
+module #{group}
 module #{extension_name}
   unless file_loaded?(__FILE__)
 	  # Leave the file suffix off the loader, in case this is encrypted
-    ex = SketchupExtension.new('#{title}', #{extension_name}/#{extension_name}_main')
+    ex = SketchupExtension.new('#{title}', '#{extension_name}/#{extension_name}_main')
     ex.description = '#{description}'
     ex.version     = '#{version}'
     ex.copyright   = '#{creator} © 2018'
@@ -34,7 +36,7 @@ module #{extension_name}
     file_loaded(__FILE__)
   end
 end # module #{extension_name}
-end # module #{group_name}
+end # module #{group}
 EXTLOADBODY
 
   zip.put_next_entry extension_name + '.rb'
@@ -43,7 +45,7 @@ EXTLOADBODY
   # The action script
   ext_action_script = <<-EXTACTIONBODY
 # Copyright 2018 #{creator} 
-# Licensed under #{license}
+# Licensed under #{copyright}
 
 require 'sketchup.rb'
 
